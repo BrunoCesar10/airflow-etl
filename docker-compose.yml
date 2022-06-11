@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+        volumes:
+            - ./criar-tabelas.sql:/docker-entrypoint-initdb.d/criar-tabelas.sql
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin4
+        hostname: pgadmin4
+        environment:
+            - PGADMIN_DEFAULT_EMAIL= abl@souunit.com.br
+            - PGADMIN_DEFAULT_PASSWORD= abl2021
+        depends_on:
+            - postgres
+        ports:
+            - "18080:80"
+        volumes:
+            - pgadmin-data:/var/lib/pgadmin
+    scheduler:
+        image: apache/airflow
+        command: scheduler
+        deploy:
+            restart_policy:
+                condition: on-failure
+        depends_on:
+            - postgres
+        env_file:
+            - .env
+        volumes:
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+    webserver:
+        image: apache/airflow
+        entrypoint: ./scripts/entrypoint.sh
+        deploy:
+            restart_policy:
+                condition: on-failure
+        depends_on:
+            - postgres
+            - scheduler
+        env_file:
+            - .env
+        volumes:
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+            - ./scripts:/opt/airflow/scripts
+        ports:
+            - "8080:8080"
+volumes:
+    pgadmin-data:
