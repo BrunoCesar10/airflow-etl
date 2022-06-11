@@ -8,4 +8,4 @@ O arquivo 'docker-compose.yml' possui todos os detalhes da execução do projeto
 
 ##
 
-Baseado nas ferramentas disponíveis no repositório https://github.com/natanascimento/data-engineering
+Baseado nas ferramentas do Apache Airflow disponíveis em https://github.com/natanascimento/data-engineering
